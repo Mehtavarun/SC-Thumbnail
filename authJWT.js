@@ -1,27 +1,13 @@
-module.exports = (jwt, app)=>{
+module.exports = (jwt, app, urlencodedParser, express, path)=>{
 
-	app.post('/api/authUser', verifytoken, (req, res)=>{
-		
-		jwt.verify(req.token, 'secretkey', (err, authData)=>{
-			
-			if(err) {
-				res.sendStatus(403);
-			}else{
-				
-				res.render('index');
-			}
-		});
-	});
-
-
-	app.get('/api/login', (req, res)=>{
+	app.get('/login', urlencodedParser,(req, res)=>{
 
 		const user = {
-			username: req.body.username,
-			password: req.body.password
+			username: req.body.username || req.query.username,
+			password: req.body.password || req.query.password
 		};
 
-		jwt.sign({user}, 'secretkey', (err, token)=>{
+		jwt.sign({user}, 'supersafesecretkey', (err, token)=>{
 			res.json({
 				loginSuccess:true,
 				token //es6 style of token:token
@@ -29,26 +15,36 @@ module.exports = (jwt, app)=>{
 		});
 	});
 
-	//Format of token
-	//Authorization : Bearer <access_token>
+	const apiRoutes = express.Router();
+	var tk = null;
 
-	function verifytoken(req, res, next){
+	apiRoutes.use((req, res, next)=>{
 		
-		//get auth header value
-		const bearerHeader = req.headers['authorization'];
+		var token =  req.query.token || req.headers['authorization'];
+		
+		if(token){
 
-		//check if bearer is undefined
-		if(typeof bearerHeader !== 'undefined'){
-			//split at the space
-			const bearer = bearerHeader.split(' ');
-			//Get token from array 
-			const bearerToken = bearer[1];
-			//set the token
-			req.token = bearerToken;
-			next();
-		}else{
-			//forbidden
+			jwt.verify(token, 'supersafesecretkey', (err, authData)=>{
+			
+				if(err) {
+					res.sendStatus(403);
+				}else{
+
+					tk=token;
+					next();
+				}
+			});	
+
+		} else {
 			res.sendStatus(403);
 		}
-	}
+	});
+
+	app.use('/api',apiRoutes);
+
+	app.get('/api/authUser', (req, res)=>{
+				
+		res.render('index', {token:tk});
+	});
+
 }

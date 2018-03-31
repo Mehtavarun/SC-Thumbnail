@@ -5,11 +5,17 @@ ejs = require('ejs'),
 multer = require('multer'),
 path = require('path'),
 jimp = require('jimp');
+bodyParser = require('body-parser');
+urlencodedParser = bodyParser.urlencoded({extended:false});
 
 //required files
-const JWT = require('./authJWT')(jwt, app),
+const authJWT = require('./authJWT')(jwt, app, urlencodedParser, express, path),
 	  resizeImage = require('./resizeImage')(jimp, app),
-	  uploadImage = require('./uploadImage')(multer, app, path, resizeImage, resizeImage, authJWT);
+	  uploadImage = require('./uploadImage')(multer, app, path);
+
+app.get('*',(req, res)=>{
+	res.sendStatus(404);
+})
 
 app.set('view engine', 'ejs');
 

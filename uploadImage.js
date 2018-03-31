@@ -1,4 +1,4 @@
-module.exports = (multer, app, path, resizeImage, authJWT)=>{  
+module.exports = (multer, app, path)=>{  
 
 	//set storage engine
 	const storage = multer.diskStorage({
@@ -34,36 +34,27 @@ module.exports = (multer, app, path, resizeImage, authJWT)=>{
 		}
 	}
 
-	app.post('/upload', authJWT.verifytoken, (req, res)=>{
-
-		jwt.verify(req.token, 'secretkey', (err, authData)=>{
-			
-			if(err) {
-				res.sendStatus(403);
-			
-			}else{
+	app.post('/api/upload', (req, res)=>{
 				
-				upload(req, res, (err)=>{
+		upload(req, res, (err)=>{
 
-					if(err) {
-						res.render('index', {msg:err})
-						
-						} else {
+			if(err) {
+				res.render('index', {msg:err})
+				
+				} else {
 
-							if(req.file === undefined){
-								res.render('index',{
-									msg:'Error: no file selected'
-								})
+					if(req.file === undefined){
+						res.render('index',{
+							msg:'Error: no file selected',
+							token:''
+						})
 
-							} else{
+					} else{
 
-								res.redirect('/resize');
-							}
-						}
-					})
-			}
-		});
-		
+						res.redirect('/resize');
+					}
+				}
+			})
 	});
 
 }
