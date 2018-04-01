@@ -1,6 +1,8 @@
 module.exports = (multer, app, path)=>{  
-app.use(morgan('dev'));
-	//set storage engine
+	
+	app.use(morgan('dev'));  //using morgan as middleware to log requests
+
+	//set storage engine for uploading
 	const storage = multer.diskStorage({
 		destination: './public/upload/',
 		filename: (req, file, callback)=>{
@@ -29,11 +31,13 @@ app.use(morgan('dev'));
 
 		if(mimetype && extname){
 			return callback(null, true);
-		} else {
+		} else {        //if other than images then sent error
 			return callback('Error: Images only');
 		}
 	}
 
+	//route to upload the image 
+	//recieved by post request from client
 	app.post('/api/upload', (req, res)=>{
 				
 		upload(req, res, (err)=>{
@@ -44,7 +48,7 @@ app.use(morgan('dev'));
 				})
 				
 				} else {
-
+					//checking if no file is selected
 					if(req.file === undefined){
 						res.render('index',{
 							msg:'Error: no file selected',
@@ -52,7 +56,7 @@ app.use(morgan('dev'));
 						})
 
 					} else{
-
+						//redirected to /resize url where the image is resized using jimp
 						res.redirect('/resize');
 					}
 				}
