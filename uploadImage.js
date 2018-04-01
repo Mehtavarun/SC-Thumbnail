@@ -1,5 +1,5 @@
 module.exports = (multer, app, path)=>{  
-
+app.use(morgan('dev'));
 	//set storage engine
 	const storage = multer.diskStorage({
 		destination: './public/upload/',
@@ -23,9 +23,9 @@ module.exports = (multer, app, path)=>{
 		//allowed ext 
 		const filetypes = /jpeg|jpg|gif|png/;
 		//check extension
-		const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+		let extname = filetypes.test(path.extname(file.originalname).toLowerCase());
 		//check mime type
-		const mimetype = filetypes.test(file.mimetype);
+		let mimetype = filetypes.test(file.mimetype);
 
 		if(mimetype && extname){
 			return callback(null, true);
@@ -39,14 +39,16 @@ module.exports = (multer, app, path)=>{
 		upload(req, res, (err)=>{
 
 			if(err) {
-				res.render('index', {msg:err})
+				res.render('index', {
+					msg:err,token:req.query.token
+				})
 				
 				} else {
 
 					if(req.file === undefined){
 						res.render('index',{
 							msg:'Error: no file selected',
-							token:''
+							token:req.query.token
 						})
 
 					} else{

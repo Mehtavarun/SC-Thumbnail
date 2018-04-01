@@ -1,5 +1,5 @@
 module.exports = (jimp, app)=>{  
-	
+app.use(morgan('dev'));	
 	app.get('/resize', (req, res)=>{
 
 		jimp.read('./public/upload/image.jpg').then(( image)=>{
