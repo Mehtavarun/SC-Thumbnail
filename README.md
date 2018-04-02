@@ -12,6 +12,20 @@ that will install all the required  dependencies on your machine.
 ```
 npm start
 ```
+### Usage
+1.You need to go to /login route and either pass parameters(username && password) or just go to it.You will recieve token as response in form of json object, copy it for future use.
+```
+http://localhost:6500/login
+or
+http://localhost:6500/login?username=djd
+```
+
+2.Go to /api/authUser?token=      //pass the token you recieved while logging in
+```
+http://localhost:6500/api/authUser?token=
+```
+3. After following step 2, a page will be rendered and upload the required image file and in response get the required image.
+
 ### Built With
 This was built using:
 1.[JWT](https://jwt.io/introduction/)
